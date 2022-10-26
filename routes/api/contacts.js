@@ -33,8 +33,9 @@ router.delete('/:contactId', async (req, res, next) => {
 router.put('/:contactId', async (req, res, next) => {
   const { contactId } = req.params;
   const body = req.body;
+  console.log(body)
   const renameContact = await contacts.updateContact(contactId, body)
-  res.json({ message: 'template message' })
+  res.json({ status: 200, data: renameContact })
 })
 
 module.exports = router

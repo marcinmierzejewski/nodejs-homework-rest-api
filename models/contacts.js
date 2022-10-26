@@ -58,9 +58,9 @@ const addContact = async (body) => {
 const updateContact = async (contactId, body) => {
   try {
     const getContactsList = await listContacts();
-    const getContactById = await getContactById(contactId);
+    const getContact = await getContactById(contactId);
     const updateContactsList = getContactsList.map((cont) =>
-      cont.id === contactId ? { ...cont, ...body } : cont
+      (cont.id === contactId ? { ...cont, ...body } : cont)
     );
     await fs.writeFile(contactsPath, JSON.stringify(updateContactsList));
     return updateContactsList;

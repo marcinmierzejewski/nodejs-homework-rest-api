@@ -47,10 +47,5 @@
     "email": "dui.Fusce.diam@Donec.com",
     "phone": "(233) 738-2360"
   },
-  {
-    "id": "9",
-    "name": "Thomas Lucas",
-    "email": "nec@Nulla.com",
-    "phone": "(704) 398-7993"
-  }
+  { "id": "9", "name": "Marcin", "email": "Marcin@wp.pl", "phone": "123456789" }
 ]
