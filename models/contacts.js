@@ -29,12 +29,12 @@ const getContactById = async (contactId) => {
 const removeContact = async (contactId) => {
   try {
     const getContactsList = await listContacts();
-    const getContactById = await getContactById(contactId);
-    const removedContact = await getContactsList.filter(
+    const getContact = await getContactById(contactId);
+    const removeContact = getContactsList.filter(
       (cont) => cont.id !== contactId
     );
-    await fs.writeFile(contactsPath, JSON.stringify(removedContact));
-    return getContactById;
+    await fs.writeFile(contactsPath, JSON.stringify(removeContact));
+    return getContact;
   } catch (error) {
     console.log("Remove error", error.message);
   }
