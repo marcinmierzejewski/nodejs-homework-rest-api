@@ -38,7 +38,11 @@ router.post("/", async (req, res, next) => {
 router.delete("/:contactId", async (req, res, next) => {
   const { contactId } = req.params;
   const deleteContact = await contacts.removeContact(contactId);
-  res.json({ status: 200, data: deleteContact, message: "contact deleted" });
+  if (deleteContact) {
+    res.json({ status: 200, data: deleteContact, message: "contact deleted" });
+  } else {
+    res.json({ status: 404, message: "Not found" });
+  }
 });
 
 router.put("/:contactId", async (req, res, next) => {
@@ -50,10 +54,15 @@ router.put("/:contactId", async (req, res, next) => {
     console.log(error);
     return res.json({ status: 400, message: "missing fields" });
   }
-  
+
   console.log(body);
   const renameContact = await contacts.updateContact(contactId, body);
-  res.json({ status: 200, data: renameContact });
+
+  if (renameContact) {
+    res.json({ status: 200, data: renameContact });
+  } else {
+    res.json({ status: 404, message: "Not found" });
+  }
 });
 
 module.exports = router;
