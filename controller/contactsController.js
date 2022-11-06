@@ -24,7 +24,7 @@ const getById = async (req, res, next) => {
     if (getContact) {
       return res.json({ status: 200, data: getContact });
     } else {
-      return res.json({ status: 404, message: "Not found" });
+      return res.json({ status: 404, message: `Not found contact id: ${contactId}` });
     }
   } catch (e) {
     console.error(e);
@@ -39,7 +39,7 @@ const createContact = async (req, res, next) => {
   try {
     if (error) {
       console.log(error);
-      return res.json({ status: 400, message: "missing fields" });
+      return res.json({ status: 400, message: "Missing fields" });
     }
     const newContact = await service.createContact({
       name,
@@ -62,11 +62,11 @@ const removeContact = async (req, res, next) => {
     if (contactToRemove) {
       res.json({
         status: 200,
-        message: "contact deleted",
+        message: "Contact deleted",
         data: contactToRemove,
       });
     } else {
-      res.json({ status: 404, message: "Not found" });
+      res.json({ status: 404, message: `Not found contact id: ${contactId}` });
     }
   } catch (e) {
     console.error(e);
@@ -82,13 +82,13 @@ const updateContact = async (req, res, next) => {
   try {
     if (error) {
       console.log(error);
-      return res.json({ status: 400, message: "missing fields" });
+      return res.json({ status: 400, message: "Missing fields" });
     }
     const renameContact = await service.updateContact(contactId, body);
     if (renameContact) {
-      res.json({ status: 200, message: "contact update", data: renameContact });
+      res.json({ status: 200, message: "Contact update", data: renameContact });
     } else {
-      res.json({ status: 404, message: "Not found" });
+      res.json({ status: 404, message: `Not found contact id: ${contactId}` });
     }
   } catch (e) {
     console.error(e);
@@ -104,13 +104,13 @@ const updateFavorite = async (req, res, next) => {
   try {
     if (error) {
       console.log(error);
-      return res.json({ status: 400, message: "missing field favorite" });
+      return res.json({ status: 400, message: "Missing field favorite" });
     }
     const update = await service.updateContact(contactId, { favorite });
     if (update) {
       res.json({ status: 200, message: "Update favorite", data: update });
     } else {
-      res.json({ status: 404, message: "Not found" });
+      res.json({ status: 404, message: `Not found contact id: ${contactId}` });
     }
   } catch (e) {
     console.error(e);
