@@ -7,6 +7,7 @@ require("dotenv").config();
 const secret = process.env.SECRET;
 
 const { validateSignUp } = require("../../tools/userValidator");
+const authorization = require("../../tools/authorization");
 
 router.post("/signup", async (req, res, next) => {
   const { email, password } = req.body;
@@ -21,7 +22,7 @@ router.post("/signup", async (req, res, next) => {
     return res.status(409).json({
       status: "error",
       code: 409,
-      message: "Email is already in use",
+      msg: "Email is already in use",
       data: "Conflict",
     });
   }
@@ -47,7 +48,7 @@ router.post("/login", async (req, res, next) => {
     return res.status(400).json({
       status: "error",
       code: 400,
-      message: "Email or password is wrong",
+      msg: "Email or password is wrong",
       data: "Bad request",
     });
   }
@@ -66,8 +67,30 @@ router.post("/login", async (req, res, next) => {
       email: user.email,
       subscription: user.subscription,
     },
-    message: `Login successful. ${user.email}`,
+    msg: `Login successful. ${user.email}`,
   });
+});
+
+router.get("/logout", authorization, async (req, res, next) => {
+  const { id } = req.user;
+  try {
+    await User.findByIdAndUpdate(id, { token: null });
+    res.status(204).json({ status: "No content" });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/current", authorization, async (req, res, next) => {
+  const { email, subscription } = req.user;
+  try {
+    res.status(200).json({
+      status: "OK",
+      body: { email, subscription },
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;

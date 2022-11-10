@@ -5,14 +5,14 @@ const authorization = require("../../tools/authorization");
 
 router.get("/", authorization, ctrlContact.get);
 
-router.get('/:contactId', ctrlContact.getById);
+router.get('/:contactId', authorization, ctrlContact.getById);
 
-router.post('/', ctrlContact.createContact)
+router.post('/', authorization, ctrlContact.createContact)
 
-router.delete("/:contactId", ctrlContact.removeContact)
+router.delete("/:contactId", authorization, ctrlContact.removeContact)
 
-router.put("/:contactId", ctrlContact.updateContact)
+router.put("/:contactId", authorization, ctrlContact.updateContact)
 
-router.patch('/:contactId/favorite', ctrlContact.updateFavorite)
+router.patch('/:contactId/favorite', authorization, ctrlContact.updateFavorite)
 
 module.exports = router;
