@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const ctrlContact = require('../../controller/contactsController')
+const authorization = require("../../tools/authorization");
 
-router.get("/", ctrlContact.get);
+router.get("/", authorization, ctrlContact.get);
 
 router.get('/:contactId', ctrlContact.getById);
 

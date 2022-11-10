@@ -6,10 +6,11 @@ const {
 } = require("../tools/contactValidator");
 
 const get = async (req, res, next) => {
+  const { email } = req.user;
   try {
     const contactsList = await service.getAllContacts();
     console.log(contactsList);
-    res.json({ status: 200, body: contactsList });
+    res.json({ status: 200, user: email, body: contactsList });
   } catch (e) {
     console.error(e);
     next(e);
