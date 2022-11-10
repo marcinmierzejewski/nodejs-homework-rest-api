@@ -3,7 +3,7 @@ const {
   validateAddContact,
   validateUpdateContact,
   validateUpdateFavorite,
-} = require("../tools/validator");
+} = require("../tools/contactValidator");
 
 const get = async (req, res, next) => {
   try {
