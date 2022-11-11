@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.SECRET;
 const { validateUser } = require("../tools/userValidator");
-// const User = require("../service/schemas/userSchemas")
 
 const signUp = async (req, res, next) => {
   const { email, password } = req.body;
@@ -24,9 +23,6 @@ const signUp = async (req, res, next) => {
   }
   try {
     const newUser = await service.signUpNewUser(email, password);
-    // const newUser = new User({ email });
-    // newUser.setPassword(password);
-    // await newUser.save();
     res.json({
       status: 201,
       msg: "Create new user",
