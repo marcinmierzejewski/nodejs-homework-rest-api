@@ -1,18 +1,14 @@
-const express = require("express");
-const router = express.Router();
-const User = require("../../service/schemas/userSchemas");
+const service = require("../service/userService");
 const jwt = require("jsonwebtoken");
-// const passport = require("passport");
 require("dotenv").config();
 const secret = process.env.SECRET;
+const { validateSignUp } = require("../tools/userValidator");
+const User = require("../service/schemas/userSchemas")
 
-const { validateSignUp } = require("../../tools/userValidator");
-const authorization = require("../../tools/authorization");
-
-router.post("/signup", async (req, res, next) => {
+const signUp = async (req, res, next) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  const { error } = validateSignUp({ email, password });
+  const user = await service.findUserByEmail({email});
+  const { error } = await validateSignUp({ email, password });
   if (error) {
     console.log(error);
     return res.json({ status: 400, msg: "Missing fields" });
@@ -38,11 +34,12 @@ router.post("/signup", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-router.post("/login", async (req, res, next) => {
+const logIn = async (req, res, next) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  try {
+    const user = await service.findUserByEmail({email});
 
   if (!user || !user.validPassword(password)) {
     return res.status(400).json({
@@ -60,7 +57,7 @@ router.post("/login", async (req, res, next) => {
   };
 
   const token = jwt.sign(payload, secret, { expiresIn: "1h" });
-  await User.findByIdAndUpdate(user.id, { token });
+  await service.findUserByIdAndUpdate(user.id, { token });
   res.status(200).json({
     token,
     user: {
@@ -69,19 +66,22 @@ router.post("/login", async (req, res, next) => {
     },
     msg: `Login successful. ${user.email}`,
   });
-});
+  } catch(error) {
+    next(error);
+  }  
+};
 
-router.get("/logout", authorization, async (req, res, next) => {
+const logOut = async (req, res, next) => {
   const { id } = req.user;
   try {
-    await User.findByIdAndUpdate(id, { token: null });
+    await service.findUserByIdAndUpdate(id, { token: null });
     res.status(204).json({ status: "No content" });
   } catch (error) {
     next(error);
   }
-});
+};
 
-router.get("/current", authorization, async (req, res, next) => {
+const current = async (req, res, next) => {
   const { email, subscription } = req.user;
   try {
     res.status(200).json({
@@ -91,6 +91,11 @@ router.get("/current", authorization, async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  signUp,
+  logIn,
+  logOut,
+  current,
+}

@@ -15,8 +15,8 @@ app.use(cors());
 
 require('./config/config-passport');
 
-const contactsRouter = require("./routes/api/contacts");
-const userRouter = require("./routes/api/users")
+const contactsRouter = require("./routes/api/contactsApi");
+const userRouter = require("./routes/api/usersApi")
 app.use("/api/users/" ,userRouter);
 app.use("/api/contacts", contactsRouter);
 
