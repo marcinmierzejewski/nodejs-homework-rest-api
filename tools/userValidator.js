@@ -3,7 +3,7 @@ const Joi = require("joi");
 const validator = (schema) => (payload) =>
   schema.validate(payload, { abortEarly: false });
 
-const singUpSchema = Joi.object({
+const userSchema = Joi.object({
 
   email: Joi.string()
     .email({
@@ -18,4 +18,4 @@ const singUpSchema = Joi.object({
 });
 
 
-exports.validateSignUp = validator(singUpSchema);
+exports.validateUser = validator(userSchema);

@@ -2,13 +2,13 @@ const service = require("../service/userService");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.SECRET;
-const { validateSignUp } = require("../tools/userValidator");
-const User = require("../service/schemas/userSchemas")
+const { validateUser } = require("../tools/userValidator");
+// const User = require("../service/schemas/userSchemas")
 
 const signUp = async (req, res, next) => {
   const { email, password } = req.body;
   const user = await service.findUserByEmail({email});
-  const { error } = await validateSignUp({ email, password });
+  const { error } = await validateUser({ email, password });
   if (error) {
     console.log(error);
     return res.json({ status: 400, msg: "Missing fields" });
@@ -23,9 +23,10 @@ const signUp = async (req, res, next) => {
     });
   }
   try {
-    const newUser = new User({ email });
-    newUser.setPassword(password);
-    await newUser.save();
+    const newUser = await service.signUpNewUser(email, password);
+    // const newUser = new User({ email });
+    // newUser.setPassword(password);
+    // await newUser.save();
     res.json({
       status: 201,
       msg: "Create new user",
@@ -38,37 +39,42 @@ const signUp = async (req, res, next) => {
 
 const logIn = async (req, res, next) => {
   const { email, password } = req.body;
+  const { error } = await validateUser({ email, password });
   try {
+    if (error) {
+      console.log(error);
+      return res.json({ status: 400, msg: "Missing fields" });
+    }
     const user = await service.findUserByEmail({email});
 
-  if (!user || !user.validPassword(password)) {
-    return res.status(400).json({
-      status: "error",
-      code: 400,
-      msg: "Email or password is wrong",
-      data: "Bad request",
-    });
-  }
+    if (!user || !user.validPassword(password)) {
+      return res.status(400).json({
+        status: "error",
+        code: 400,
+        msg: "Email or password is wrong",
+        data: "Bad request",
+      });
+    }
 
-  const payload = {
-    id: user.id,
-    email: user.email,
-    subscription: user.subscription,
-  };
-
-  const token = jwt.sign(payload, secret, { expiresIn: "1h" });
-  await service.findUserByIdAndUpdate(user.id, { token });
-  res.status(200).json({
-    token,
-    user: {
+    const payload = {
+      id: user.id,
       email: user.email,
       subscription: user.subscription,
-    },
-    msg: `Login successful. ${user.email}`,
-  });
-  } catch(error) {
-    next(error);
-  }  
+    };
+
+    const token = jwt.sign(payload, secret, { expiresIn: "1h" });
+    await service.findUserByIdAndUpdate(user.id, { token });
+    res.status(200).json({
+      token,
+      user: {
+        email: user.email,
+        subscription: user.subscription,
+      },
+      msg: `Login successful. ${user.email}`,
+    });
+    } catch(error) {
+      next(error);
+    }  
 };
 
 const logOut = async (req, res, next) => {
