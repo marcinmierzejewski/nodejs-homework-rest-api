@@ -26,7 +26,7 @@ const signUp = async (req, res, next) => {
     res.json({
       status: 201,
       msg: "Create new user",
-      data: { email: newUser.email, subscription: "starter" },
+      data: { email: newUser.email, subscription: newUser.subscription, avatarURL: newUser.avatarURL},
     });
   } catch (error) {
     next(error);
