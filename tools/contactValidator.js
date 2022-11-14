@@ -18,8 +18,6 @@ const addContactSchema = Joi.object({
     .required(),
 
   favorite: Joi.boolean().optional(),
-
-    
 });
 
 const updateContactSchema = Joi.object({
