@@ -3,6 +3,9 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.SECRET;
 const { validateUser } = require("../tools/userValidator");
+const Jimp = require('jimp');
+const path = require('path');
+const fs = require('fs').promises;
 
 const signUp = async (req, res, next) => {
   const { email, password } = req.body;
@@ -95,9 +98,38 @@ const current = async (req, res, next) => {
   }
 };
 
+const avatar = async (req, res, next) => {
+  const uploadDir = path.join(process.cwd(), 'tmp');
+  const storeImage = path.join(process.cwd(), 'public/avatars');
+  const { id } = req.user;
+  const { path: temporaryName, originalname } = req.file;
+  const ext = path.extname(originalname);
+  const newName = `pic_${id}${ext}`;
+  const avatarURL = `/avatars/${newName}`;
+  const fileName = path.join(storeImage, newName);
+  
+  try {
+    await fs.rename(temporaryName, fileName);
+    await Jimp.read(fileName)
+    .then(avatar => {
+      return avatar
+        .resize(250, 250)
+        .write(fileName);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+    await service.updateAvatar(id, avatarURL)
+    res.json({ message: 'Plik załadowany pomyślnie', status: 200, avatarURL });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   signUp,
   logIn,
   logOut,
   current,
+  avatar,
 }
