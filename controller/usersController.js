@@ -148,6 +148,20 @@ const avatar = async (req, res, next) => {
   }
 };
 
+const emailVerification = async(req, res, next) => {
+  const { verificationToken } = req.params;
+  try {
+    const user = await service.updateVerificationToken(verificationToken);
+    if (user) {
+      return res.status(200).json({ msg: "Verification successful" });
+    } else {
+        return res.status(404).json({ msg: "User not found" });
+    }
+  } catch (error){
+    next(error);
+  }
+}
+
 module.exports = {
   signUp,
   logIn,
@@ -155,4 +169,5 @@ module.exports = {
   current,
   changeSubscription,
   avatar,
+  emailVerification
 };

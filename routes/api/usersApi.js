@@ -34,5 +34,6 @@ router.patch(
   upload.single("avatar"),
   ctrlUser.avatar
 );
+router.get("/verify/:verificationToken", ctrlUser.emailVerification)
 
 module.exports = router;
