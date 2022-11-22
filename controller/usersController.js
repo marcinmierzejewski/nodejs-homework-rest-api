@@ -2,7 +2,7 @@ const service = require("../service/userService");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.SECRET;
-const { validateUser } = require("../tools/userValidator");
+const { validateUser, validateSubscription} = require("../tools/userValidator");
 const Jimp = require("jimp");
 const path = require("path");
 const fs = require("fs").promises;
@@ -103,6 +103,23 @@ const current = async (req, res, next) => {
   }
 };
 
+const changeSubscription = async (req, res, next) => {
+  const { id } = req.user;
+  const { subscription } = req.body;
+  const { error } = await validateSubscription({subscription});
+  
+  try {
+    if (error) {
+      console.log(error);
+      return res.json({ status: 400, msg: "Missing fields" });
+    }    
+    const changeSub = await service.setSubscription(id, {subscription})
+    res.json({ status: 200, msg: "Change subscription", data: changeSub });
+  } catch (error) {
+    next(error);
+  }
+}
+
 const avatar = async (req, res, next) => {
   const storeImage = path.join(process.cwd(), "public/avatars");
   const { id } = req.user;
@@ -136,5 +153,6 @@ module.exports = {
   logIn,
   logOut,
   current,
+  changeSubscription,
   avatar,
 };

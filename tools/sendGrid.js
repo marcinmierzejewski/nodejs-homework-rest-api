@@ -1,0 +1,29 @@
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+const mailMsg = (email, verificationToken) => {
+  return {
+    to: email,
+    from: "16leader@interia.pl",
+    subject: "Verification your email address",
+    html: `
+    <div>
+      <h2> Confirm your email </h2>
+      <p> Please click link to active your account </p>
+      <a href="http://localhost:3000/api/users/verify/${verificationToken}">Click here</a>
+    </div>`,
+  };
+};
+
+const sendMail = (email, verificationToken) => {
+  sgMail
+    .send(mailMsg(email, verificationToken))
+    .then(() => {
+      console.log("Email sent");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
+module.export = sendMail;

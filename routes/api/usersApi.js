@@ -27,6 +27,7 @@ router.post("/signup", ctrlUser.signUp);
 router.post("/login", ctrlUser.logIn);
 router.get("/logout", authorization, ctrlUser.logOut);
 router.get("/current", authorization, ctrlUser.current);
+router.patch("/", authorization, ctrlUser.changeSubscription);
 router.patch(
   "/avatars",
   authorization,

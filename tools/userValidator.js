@@ -16,4 +16,9 @@ const userSchema = Joi.object({
     .required(),
 });
 
+const subscriptionSchema = Joi.object({
+  subscription: Joi.string().valid("starter", "pro", "business").required(),
+})
+
 exports.validateUser = validator(userSchema);
+exports.validateSubscription = validator(subscriptionSchema);
