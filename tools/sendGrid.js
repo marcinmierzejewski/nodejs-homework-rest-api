@@ -11,7 +11,7 @@ const mailMsg = (email, verificationToken) => {
     <div>
       <h2> Confirm your email </h2>
       <p> Please click link to active your account </p>
-      <a href="http://localhost:3000/api/users/verify/${verificationToken}">Click here</a>
+      <a href="http://localhost:3000/api/users/verify/${verificationToken}">Confirm</a>
     </div>`,
   };
 };
@@ -27,4 +27,4 @@ const sendMail = (email, verificationToken) => {
     });
 };
 
-module.export = sendMail;
+module.exports = sendMail;

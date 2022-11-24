@@ -33,6 +33,7 @@ const signUp = async (req, res, next) => {
         email: newUser.email,
         subscription: newUser.subscription,
         avatarURL: newUser.avatarURL,
+        verificationToken: newUser.verificationToken,
       },
     });
   } catch (error) {
@@ -59,6 +60,10 @@ const logIn = async (req, res, next) => {
       });
     }
 
+    if (!user.verify) {
+      return res.status(401).json({ message: "Email has not been verified" });
+    }
+
     const payload = {
       id: user.id,
       email: user.email,
@@ -73,6 +78,9 @@ const logIn = async (req, res, next) => {
         email: user.email,
         subscription: user.subscription,
         avatarURL: user.avatarURL,
+        verificationToken: user.verificationToken,
+        id: user.id,
+        verify: user.verify,
       },
       msg: `Login successful. ${user.email}`,
     });
@@ -92,11 +100,11 @@ const logOut = async (req, res, next) => {
 };
 
 const current = async (req, res, next) => {
-  const { email, subscription } = req.user;
+  const { email, subscription, verificationToken } = req.user;
   try {
     res.status(200).json({
       status: "OK",
-      body: { email, subscription },
+      body: { email, subscription, verificationToken },
     });
   } catch (error) {
     next(error);
