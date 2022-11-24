@@ -18,7 +18,17 @@ const userSchema = Joi.object({
 
 const subscriptionSchema = Joi.object({
   subscription: Joi.string().valid("starter", "pro", "business").required(),
+});
+
+const resendSchema = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["pl", "com", "net", "eu"] },
+    })
+    .required(),
 })
 
 exports.validateUser = validator(userSchema);
 exports.validateSubscription = validator(subscriptionSchema);
+exports.validateResend = validator(resendSchema);

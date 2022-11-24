@@ -2,10 +2,11 @@ const service = require("../service/userService");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.SECRET;
-const { validateUser, validateSubscription} = require("../tools/userValidator");
+const { validateUser, validateSubscription, validateResend} = require("../tools/userValidator");
 const Jimp = require("jimp");
 const path = require("path");
 const fs = require("fs").promises;
+const sendMail = require("../tools/sendGrid");
 
 const signUp = async (req, res, next) => {
   const { email, password } = req.body;
@@ -62,7 +63,7 @@ const logIn = async (req, res, next) => {
 
     if (!user.verify) {
       return res.status(401).json({ message: "Email has not been verified" });
-    }
+    };
 
     const payload = {
       id: user.id,
@@ -157,7 +158,7 @@ const avatar = async (req, res, next) => {
 };
 
 const emailVerification = async(req, res, next) => {
-  const { verificationToken } = req.params;
+  const { verificationToken } = req.params;  
   try {
     const user = await service.updateVerificationToken(verificationToken);
     if (user) {
@@ -165,6 +166,31 @@ const emailVerification = async(req, res, next) => {
     } else {
         return res.status(404).json({ msg: "User not found" });
     }
+  } catch (error){
+    next(error);
+  }
+};
+
+const resendEmailVerification = async(req, res, next) => {
+  const { email } = req.body;
+  const { error } = await validateResend({ email });
+  if (error) {
+    console.log(error);
+    return res.json({ status: 400, msg: "Missing fields" });
+  }
+  try {
+    const user = await service.findUserByEmail({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    
+    } else if (user.verify) {
+      return res.status(400).json({ message: "Verification has already been passed" });
+    
+    } else {
+      await sendMail(email, user.verificationToken);
+      return res.status(200).json({ message: "Verification email sent" });
+    }   
+
   } catch (error){
     next(error);
   }
@@ -177,5 +203,6 @@ module.exports = {
   current,
   changeSubscription,
   avatar,
-  emailVerification
+  emailVerification,
+  resendEmailVerification
 };
