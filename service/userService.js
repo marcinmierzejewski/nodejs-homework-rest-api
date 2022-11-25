@@ -28,7 +28,7 @@ const updateAvatar = (id, avatarURL) =>
   User.findByIdAndUpdate(id, { avatarURL });
 
 const updateVerificationToken = async (verificationToken) => {
-  await User.findOneAndUpdate(
+  return await User.findOneAndUpdate(
     { verificationToken },
     {
       verificationToken: null,
